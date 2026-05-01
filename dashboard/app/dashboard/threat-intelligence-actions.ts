@@ -48,7 +48,10 @@ export async function generateThreatIntelReport(): Promise<ThreatIntelActionStat
     ])
 
     const totalQueries = stats._count._all ?? 0
-    const blockedCount = blockedDomains.reduce((sum, row) => sum + row._count.id, 0)
+    const blockedCount = blockedDomains.reduce(
+      (sum: number, row: { _count: { id: number } }) => sum + row._count.id,
+      0
+    )
     const cacheHitCount = await prisma.queryLog.count({
       where: { cacheHit: true, timestamp: { gte: dayAgo } }
     })
@@ -72,8 +75,8 @@ export async function generateThreatIntelReport(): Promise<ThreatIntelActionStat
           },
           {
             role: 'user',
-            content: `Analyze this DNS resolver data from the last 24 hours:\n\nTop queried domains: ${JSON.stringify(topDomains.map((d) => ({ domain: d.domain, count: d._count.id })))}\n\nTop blocked domains: ${JSON.stringify(blockedDomains.map((d) => ({ domain: d.domain, count: d._count.id })))}\n\nHourly query volume: ${JSON.stringify(
-              hourlyVolume.map((row) => ({ hour: row.hour, count: Number(row.count) }))
+            content: `Analyze this DNS resolver data from the last 24 hours:\n\nTop queried domains: ${JSON.stringify(topDomains.map((d: { domain: string; _count: { id: number } }) => ({ domain: d.domain, count: d._count.id })))}\n\nTop blocked domains: ${JSON.stringify(blockedDomains.map((d: { domain: string; _count: { id: number } }) => ({ domain: d.domain, count: d._count.id })))}\n\nHourly query volume: ${JSON.stringify(
+              hourlyVolume.map((row: { hour: Date; count: bigint }) => ({ hour: row.hour, count: Number(row.count) }))
             )}\n\nCache hit rate: ${cacheHitRate}%\nBlock rate: ${blockRate}%\nTotal queries: ${totalQueries}\nAvg response time: ${stats._avg.responseTimeMs?.toFixed(2) ?? '0.00'}ms\n\nIdentify: 1) unusual query patterns or suspicious domains, 2) categories of threats trending in blocked domains (phishing/malware/trackers etc), 3) performance observations. Be specific and concise.`
           }
         ],
