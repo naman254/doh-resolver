@@ -12,7 +12,7 @@ export async function GET() {
     })
 
     const topQueried = await Promise.all(
-      topQueriedRaw.map(async (row) => {
+      topQueriedRaw.map(async (row: { domain: string; _count: { id: number } }) => {
         const blockedCount = await prisma.queryLog.count({
           where: { domain: row.domain, blocked: true }
         })
@@ -33,7 +33,7 @@ export async function GET() {
       take: 10
     })
 
-    const topBlocked = topBlockedRaw.map((row) => ({
+    const topBlocked = topBlockedRaw.map((row: { domain: string; _count: { id: number } }) => ({
       domain: row.domain,
       blockCount: row._count.id
     }))
