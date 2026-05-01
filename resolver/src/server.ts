@@ -150,7 +150,7 @@ app.get('/dns-query', async (req: Request, res: Response) => {
           type: recordType,
           blocked: result.blocked,
           cacheHit: result.cacheHit,
-          responseTimeMs: duration,
+          responseTimeMs: Math.round(duration),
           resolvedIp: result.resolvedIp,
         },
       })
@@ -193,7 +193,7 @@ app.post('/dns-query', async (req: Request, res: Response) => {
           type: recordType,
           blocked: result.blocked,
           cacheHit: result.cacheHit,
-          responseTimeMs: duration,
+          responseTimeMs: Math.round(duration),
           resolvedIp: result.resolvedIp,
         },
       })
