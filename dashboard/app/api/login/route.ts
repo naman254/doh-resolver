@@ -4,6 +4,8 @@ import { ironSessionOptions } from '../../../lib/session'
 
 export async function POST(req: Request) {
   try {
+    // log incoming method for easier diagnosis in deployment logs
+    console.log('[login] incoming method:', (req as any)?.method ?? 'unknown')
     if (!process.env.DASHBOARD_PASSWORD) {
       return NextResponse.json({ ok: false, error: 'Server misconfigured: DASHBOARD_PASSWORD not set' }, { status: 500 })
     }
@@ -45,4 +47,20 @@ export async function POST(req: Request) {
     }
     return NextResponse.json({ ok: false, error: 'Server error' }, { status: 500 })
   }
+}
+
+// Support OPTIONS preflight requests (browsers may send these for fetch calls)
+export async function OPTIONS() {
+  return NextResponse.json(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    }
+  })
+}
+
+// Provide a clear response for GET to avoid INVALID_REQUEST_METHOD log noise
+export async function GET() {
+  return NextResponse.json({ ok: false, error: 'Invalid request method: use POST to submit credentials' }, { status: 405 })
 }
