@@ -26,7 +26,7 @@ export function DomainAnalytics() {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const res = await fetch('/api/analytics')
+        const res = await fetch('/api/analytics', { cache: 'no-store' })
         if (!res.ok) throw new Error('Failed to fetch analytics')
         const data = await res.json()
         setAnalytics(data)
