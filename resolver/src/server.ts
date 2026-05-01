@@ -71,6 +71,24 @@ function jsonToDnsPacket(query: dnsPacket.Packet, jsonData: any): Buffer {
   } as dnsPacket.Packet);
 }
 
+async function logQueryResolution(
+  domain: string,
+  recordType: string,
+  result: Awaited<ReturnType<typeof resolveDomain>>,
+  duration: number
+) {
+  await prisma.queryLog.create({
+    data: {
+      domain,
+      type: recordType,
+      blocked: result.blocked,
+      cacheHit: result.cacheHit,
+      responseTimeMs: Math.round(duration),
+      resolvedIp: result.resolvedIp,
+    },
+  });
+}
+
 // ─── Shared resolution logic ───────────────────────────────────────────────
 async function resolveDomain(domain: string, recordType: string) {
   const cacheKey = `dns:${domain}:${recordType}`;
@@ -143,18 +161,11 @@ app.get('/dns-query', async (req: Request, res: Response) => {
     const result = await resolveDomain(domain, recordType);
     const duration = Date.now() - startTime;
 
-    prisma.queryLog
-      .create({
-        data: {
-          domain,
-          type: recordType,
-          blocked: result.blocked,
-          cacheHit: result.cacheHit,
-          responseTimeMs: Math.round(duration),
-          resolvedIp: result.resolvedIp,
-        },
-      })
-      .catch((e) => console.error('Log Error:', e));
+    try {
+      await logQueryResolution(domain, recordType, result, duration);
+    } catch (e) {
+      console.error('Log Error:', e);
+    }
 
     console.log(
       `[DNS][JSON] ${result.blocked ? 'Blocked' : result.cacheHit ? 'Cache hit' : 'Resolved'} ${domain} (${recordType}) in ${duration}ms`
@@ -186,18 +197,11 @@ app.post('/dns-query', async (req: Request, res: Response) => {
     const result = await resolveDomain(domain, recordType);
     const duration = Date.now() - startTime;
 
-    prisma.queryLog
-      .create({
-        data: {
-          domain,
-          type: recordType,
-          blocked: result.blocked,
-          cacheHit: result.cacheHit,
-          responseTimeMs: Math.round(duration),
-          resolvedIp: result.resolvedIp,
-        },
-      })
-      .catch((e) => console.error('Log Error:', e));
+    try {
+      await logQueryResolution(domain, recordType, result, duration);
+    } catch (e) {
+      console.error('Log Error:', e);
+    }
 
     console.log(
       `[DNS][BINARY] ${result.blocked ? 'Blocked' : result.cacheHit ? 'Cache hit' : 'Resolved'} ${domain} (${recordType}) in ${duration}ms`
