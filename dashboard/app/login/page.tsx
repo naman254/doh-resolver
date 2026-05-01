@@ -19,7 +19,8 @@ export default function LoginPage() {
     if (res.ok) {
       router.push('/dashboard')
     } else {
-      setError('Invalid password')
+      const payload = await res.json().catch(() => null)
+      setError(payload?.error ?? 'Login failed')
     }
   }
 
