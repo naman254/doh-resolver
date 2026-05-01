@@ -21,7 +21,7 @@ async function runStressTest() {
     console.log(`\n📦 Round ${round}/${TOTAL_ROUNDS}`);
     
     const requests = Array.from({ length: CONCURRENT_REQUESTS }).map((_, i) => {
-      const target = testDomains[i % testDomains.length];
+      const target = testDomains[i % testDomains.length]!;
       return axios.get(SERVER_URL, {
         params: { name: target.name, type: target.type },
         timeout: 5000
