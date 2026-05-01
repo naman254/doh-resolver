@@ -33,7 +33,9 @@ export async function POST(req: Request) {
     }
 
     
-    const res = NextResponse.redirect(new URL('/dashboard', req.url))
+    // Return JSON rather than a 307 redirect. 307 preserves the POST method and
+    // causes the browser to re-POST to /dashboard (producing INVALID_REQUEST_METHOD).
+    const res = NextResponse.json({ ok: true })
     const session = await getIronSession(req as any, res as any, ironSessionOptions as any)
     ;(session as any).user = { authenticated: true }
     await (session as any).save?.()
