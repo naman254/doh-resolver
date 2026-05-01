@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model QueryLog {
+  id             Int      @id @default(autoincrement())
+  domain         String
+  type           String
+  timestamp      DateTime @default(now())
+  resolvedIp     String?
+  cacheHit       Boolean
+  blocked        Boolean
+  responseTimeMs Int
+}
