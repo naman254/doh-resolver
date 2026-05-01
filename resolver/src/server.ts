@@ -102,15 +102,24 @@ async function resolveDomain(domain: string, recordType: string) {
   }
 
   // 3. UPSTREAM FETCH
-  const response = await axios.get(UPSTREAM_DNS, {
-    params: { name: domain, type: recordType },
-    headers: { Accept: 'application/dns-json' },
-  });
-  const data = response.data;
+  let data;
+  try {
+    const response = await axios.get(UPSTREAM_DNS, {
+      params: { name: domain, type: recordType },
+      headers: { Accept: 'application/dns-json' },
+    });
+    data = response.data;
+  } catch (upstreamError: any) {
+    // Upstream rejected this query type — return empty NOERROR response
+    console.log(`[DNS] Upstream rejected ${domain} (${recordType}) — returning empty response`);
+    data = { Status: 0, Answer: [] };
+  }
 
-  // 4. CACHE
-  const ttl = data.Answer?.[0]?.TTL || 60;
-  await redis.set(cacheKey, data, { ex: ttl });
+  // 4. CACHE (only if we got a real answer)
+  if (data.Answer?.length > 0) {
+    const ttl = data.Answer[0].TTL || 60;
+    await redis.set(cacheKey, data, { ex: ttl });
+  }
 
   return {
     blocked: false,
