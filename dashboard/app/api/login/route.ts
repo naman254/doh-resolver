@@ -12,11 +12,11 @@ export async function POST(req: Request) {
     const expected = process.env.DASHBOARD_PASSWORD?.toString() ?? ''
     const supplied = (password ?? '').toString()
 
-    // Trim both sides to avoid accidental whitespace issues
+    
     const expectedTrim = expected.trim()
     const suppliedTrim = supplied.trim()
 
-    // Log diagnostic info (don't log secrets) to help debugging locally
+    
     console.log('[login] expected length:', expectedTrim.length, 'supplied length:', suppliedTrim.length)
 
     if (!suppliedTrim || suppliedTrim !== expectedTrim) {
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: 'Invalid password', expectedLength: expectedTrim.length }, { status: 401 })
     }
 
-    // create a session and redirect to /dashboard
+    
     const res = NextResponse.redirect(new URL('/dashboard', req.url))
     const session = await getIronSession(req as any, res as any, ironSessionOptions as any)
     ;(session as any).user = { authenticated: true }
