@@ -42,8 +42,8 @@ export async function GET() {
       topQueried,
       topBlocked,
       timestamp: new Date().toISOString()
-    })
+    }, { headers: { 'Cache-Control': 'no-store' } })
   } catch (e) {
-    return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch analytics' }, { status: 500, headers: { 'Cache-Control': 'no-store' } })
   }
 }

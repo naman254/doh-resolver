@@ -14,8 +14,8 @@ export async function GET() {
       blocked,
       avgResponseTime: Math.round(avgResponse._avg?.responseTimeMs ?? 0),
       timestamp: new Date().toISOString()
-    })
+    }, { headers: { 'Cache-Control': 'no-store' } })
   } catch (e) {
-    return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500, headers: { 'Cache-Control': 'no-store' } })
   }
 }
