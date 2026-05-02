@@ -2,6 +2,8 @@ import { StatsWidget } from './stats-widget'
 import { DomainAnalytics } from './domain-analytics'
 import { ThreatIntelligenceSection } from './threat-intelligence'
 
+export const dynamic = 'force-dynamic'
+
 export default function DashboardPage() {
   return (
     <div className="min-h-screen overflow-hidden p-4 lg:p-5">
