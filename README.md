@@ -11,7 +11,7 @@ Built as a privacy-preserving DNS proxy — your ISP sees only encrypted HTTPS t
 | Service | URL |
 |---|---|
 | Resolver | `https://dns.namansingh.dev/dns-query` |
-| Dashboard | `https://doh-resolver.vercel.app/login` |
+| Dashboard | `https://dashboard.namansingh.dev` |
 | Dashboard Password | `admin123` |
 
 ---
