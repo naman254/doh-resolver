@@ -4,14 +4,14 @@ A self-hostable **DNS-over-HTTPS (DoH) resolver** with Redis caching, malicious 
 
 Built as a privacy-preserving DNS proxy — your ISP sees only encrypted HTTPS traffic, and upstream resolvers like Cloudflare see only the server's IP, never yours.
 
-![Dashboard Preview](./screenshots/dashboard.png)
+![Dashboard Preview](./dashboard.png)
 
 ## Live Demo
 
 | Service | URL |
 |---|---|
 | Resolver | `https://dns.namansingh.dev/dns-query` |
-| Dashboard | `https://doh-resolver.vercel.app/login` |
+| Dashboard | `https://dashboard.namansingh.dev` |
 | Dashboard Password | `admin123` |
 
 ---
@@ -76,11 +76,10 @@ Dashboard (Vercel)
 
 | Metric | Value |
 |---|---|
-| Cache hit response time | ~X ms (P99) |
-| Upstream resolution time | ~X ms (P99) |
+| Cache hit response time | ~40 ms |
+| Upstream resolution time | ~100 ms |
 | Blocklist lookup | O(1) via Redis Set |
-| Blocklist size | 100,000+ domains |
-| Requests/sec (stress tested) | X,000+ |
+| Blocklist size | 83000+ domains |
 
 ---
 
@@ -249,23 +248,13 @@ doh-resolver/
 
 ```
 1. On server startup, fetch Steven Black unified hosts list
-2. Parse ~100k+ malicious domains
+2. Parse ~83k+ malicious domains
 3. Load into Redis Set (SADD) in batches
 4. Daily cron refreshes the list at midnight
 5. Each DNS query checks blocklist with SISMEMBER — O(1)
 ```
 
----
 
-## Screenshots
-
-### Dashboard — Live Stats + AI Threat Intelligence
-![Dashboard](./screenshots/dashboard.png)
-
-### Dashboard — Domain Analytics
-![Domain Analytics](./screenshots/domains.png)
-
----
 
 ## Environment Variables
 
